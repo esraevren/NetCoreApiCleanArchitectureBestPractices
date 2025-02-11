@@ -29,5 +29,27 @@ namespace App.Services
             return new ServiceResult<T> { ErrorMessage = errorMessages, StatusCode = status };
         }
     }
+
+    public class ServiceResult
+    {
+        public List<string>? ErrorMessage { get; set; }
+        public bool IsSuccess => ErrorMessage == null || ErrorMessage.Count == 0;
+        public HttpStatusCode StatusCode { get; set; }
+
+        //static factory methods
+        public static ServiceResult Success(HttpStatusCode status = HttpStatusCode.OK)
+        {
+            return new ServiceResult { StatusCode = status };
+        }
+        public static ServiceResult Fail(string errorMessage, HttpStatusCode status = HttpStatusCode.BadRequest)
+        {
+            return new ServiceResult { ErrorMessage = new List<string> { errorMessage }, StatusCode = status };
+        }
+
+        public static ServiceResult Fail(List<string> errorMessages, HttpStatusCode status = HttpStatusCode.BadRequest)
+        {
+            return new ServiceResult { ErrorMessage = errorMessages, StatusCode = status };
+        }
+    }
 }
 
