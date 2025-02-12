@@ -9,10 +9,10 @@ namespace App.Services.Products
     public interface IProductService
     {
         Task<ServiceResult<List<ProductDto>>> GetTopPriceProductsAsync(int categoryId);
-        Task<ServiceResult<ProductDto>> GetProductById(int id);
-        Task<ServiceResult> CreateProductAsync(CreateProductRequest request);
+        Task<ServiceResult<ProductDto?>> GetProductById(int id);
+        Task<ServiceResult<CreateProductResponse>> CreateProductAsync(CreateProductRequest request);
         Task<ServiceResult> UpdateProductAsync(int id, UpdateProductRequest request);
         Task<ServiceResult> DeleteProductAsync(int id);
-
+        Task<ServiceResult<List<ProductDto>>> GetAllListAsync();
     }
 }
