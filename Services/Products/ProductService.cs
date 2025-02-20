@@ -59,7 +59,7 @@ namespace App.Services.Products
             productRepository.Update(product);
             await unitOfWork.SaveChangesAsync();
 
-            return ServiceResult.Success();
+            return ServiceResult.Success(HttpStatusCode.NoContent);
         }
 
         public async Task<ServiceResult> DeleteProductAsync(int id)
@@ -74,11 +74,19 @@ namespace App.Services.Products
             productRepository.Delete(product);
             await unitOfWork.SaveChangesAsync();
 
-            return ServiceResult.Success();
+            return ServiceResult.Success(HttpStatusCode.NoContent);
         }
         public async Task<ServiceResult<List<ProductDto>>> GetAllListAsync()
         {
             var products = await productRepository.GetAll().ToListAsync();
+            var productList = products.Select(p => new ProductDto(p.Id, p.Name, p.Price, p.Stock)).ToList();
+
+            return ServiceResult<List<ProductDto>>.Success(productList);
+        }
+
+        public async Task<ServiceResult<List<ProductDto>>> GetPagedAllListAsync(int pageNumber, int pageSize)
+        {
+            var products = await productRepository.GetAll().Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
             var productList = products.Select(p => new ProductDto(p.Id, p.Name, p.Price, p.Stock)).ToList();
 
             return ServiceResult<List<ProductDto>>.Success(productList);
