@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace App.Services.Products
+namespace App.Services.Products.Create
 {
     public class CreateProductRequestValidator : AbstractValidator<CreateProductRequest>
     {
@@ -14,7 +14,7 @@ namespace App.Services.Products
         {
             RuleFor(x => x.Name).NotNull().WithMessage("Product name is required")
                 .NotEmpty().WithMessage("Product name is required")
-                .Length(3,10).WithMessage("Product name must be between 3 and 10 characters");
+                .Length(3, 10).WithMessage("Product name must be between 3 and 10 characters");
 
             //price validation
             RuleFor(x => x.Price).NotNull().WithMessage("Product price is required")
@@ -22,7 +22,7 @@ namespace App.Services.Products
 
             //stock validation
             RuleFor(x => x.Stock)
-                .InclusiveBetween(1,100).WithMessage("Product stock must be between 1 and 100");
+                .InclusiveBetween(1, 100).WithMessage("Product stock must be between 1 and 100");
 
         }
     }
