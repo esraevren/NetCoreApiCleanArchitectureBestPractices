@@ -2,6 +2,7 @@
 using App.Repositories.Products;
 using App.Services.ExceptionHandlers;
 using App.Services.Products.Create;
+using App.Services.Products.Update;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
@@ -13,7 +14,7 @@ namespace App.Services.Products
         public async Task<ServiceResult<List<ProductDto>>> GetTopPriceProductsAsync(int categoryId)
         {
             var products = await productRepository.GetTopPriceProductsAsync(categoryId);
-            var productList = products.Select(p => new ProductDto(p.Id, p.Name, p.Price, p.Stock)).ToList();
+            var productList = mapper.Map<List<ProductDto>>(products);
 
             return new ServiceResult<List<ProductDto>> { Data = productList };
         }
@@ -27,25 +28,27 @@ namespace App.Services.Products
                 return ServiceResult<ProductDto?>.Fail("Product not found", HttpStatusCode.NotFound);
             }
 
-            var productAsDto = new ProductDto(product.Id, product.Name, product.Price, product.Stock);
+            var productAsDto = new ProductDto(product.Id, product.Name, product.Price, product.Stock, product.CategoryId);
+
             return ServiceResult<ProductDto>.Success(productAsDto)!;
         }
 
         public async Task<ServiceResult<CreateProductResponse>> CreateProductAsync(CreateProductRequest request)
         {
-            throw new CriticalException("Critical exception");
             var anyProduct = await productRepository.Where(p => p.Name == request.Name).AnyAsync();
             if (anyProduct)
             {
                 return ServiceResult<CreateProductResponse>.Fail("Product already exists");
             }
 
-            var product = new Product
-            {
-                Name = request.Name,
-                Price = request.Price,
-                Stock = request.Stock
-            };
+            //var product = new Product
+            //{
+            //    Name = request.Name,
+            //    Price = request.Price,
+            //    Stock = request.Stock
+            //};
+
+            var product = mapper.Map<Product>(request);
 
             await productRepository.AddAsync(product);
             await unitOfWork.SaveChangesAsync();
@@ -62,9 +65,17 @@ namespace App.Services.Products
                 return ServiceResult.Fail("Product not found", HttpStatusCode.NotFound);
             }
 
-            product.Name = request.Name;
-            product.Price = request.Price;
-            product.Stock = request.Stock;
+            var isProductExist = await productRepository.Where(p => p.Name == request.Name && p.Id != product.Id ).AnyAsync();
+            if (isProductExist)
+            {
+                return ServiceResult.Fail("Product Name already exists", HttpStatusCode.BadRequest);
+            }
+
+            //product.Name = request.Name;
+            //product.Price = request.Price;
+            //product.Stock = request.Stock;
+
+            product = mapper.Map(request, product);
 
             productRepository.Update(product);
             await unitOfWork.SaveChangesAsync();
@@ -103,6 +114,7 @@ namespace App.Services.Products
 
             return ServiceResult.Success(HttpStatusCode.NoContent);
         }
+
         public async Task<ServiceResult<List<ProductDto>>> GetAllListAsync()
         {
             var products = await productRepository.GetAll().ToListAsync();

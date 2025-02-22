@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Products\Update\" />
+    <Folder Include="Mapping\" />
   </ItemGroup>
 
 </Project>

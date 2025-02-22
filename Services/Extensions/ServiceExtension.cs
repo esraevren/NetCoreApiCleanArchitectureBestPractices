@@ -1,16 +1,11 @@
-﻿using App.Repositories.Products;
-using App.Repositories;
+﻿using App.Repositories;
+using App.Services.Categories;
+using App.Services.ExceptionHandlers;
+using App.Services.Products;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using App.Services.Products;
-using FluentValidation.AspNetCore;
-using FluentValidation;
 using System.Reflection;
 
 namespace App.Services.Extensions
@@ -21,6 +16,8 @@ namespace App.Services.Extensions
         {
             services.AddScoped<IProductService, ProductService>();
 
+            services.AddScoped<ICategoryService, CategoryService>();
+
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
             services.AddFluentValidationAutoValidation();
@@ -28,6 +25,9 @@ namespace App.Services.Extensions
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+            services.AddExceptionHandler<CriticalExceptionHandler>();
+            services.AddExceptionHandler<GlobalExceptionHandler>();
 
             return services;
         }

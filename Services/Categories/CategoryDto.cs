@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace App.Services.Products
+namespace App.Services.Categories
 {
-    public record UpdateProductRequest(string Name, decimal Price, int Stock);
+    public record CategoryDto(int Id, string Name );
 }
